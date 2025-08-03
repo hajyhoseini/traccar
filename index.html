@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+ <head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="${colorPrimary}" />
+  <meta name="description" content="${description}" />
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon-180x180.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon-180x180.png" sizes="180x180" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="stylesheet" href="/styles.css" />
+  <link href="https://cdn.fontcdn.ir/Font/Persian/Vazir/Vazir.css" rel="stylesheet" />
+
+<!-- index.html -->
+<link href="https://cdn.fontcdn.ir/Font/Persian/BYekan/BYekan.css" rel="stylesheet" type="text/css" />
+
+  <!-- اضافه کردن لینک فونت وزیر از CDN -->
+<link href="https://cdn.fontcdn.ir/Font/Persian/Vazir/Vazir.css" rel="stylesheet" type="text/css" />
+<link href="https://cdn.fontcdn.ir/Font/Persian/BYekan/BYekan.css" rel="stylesheet" />
+
+  <title>توسعه راهکار های فناورانه</title>
+  <style>
+body {
+    font-family: Vazir, sans-serif;
+    font-weight: bold;
+    direction: rtl;
+}
+
+    .loader {
+      position: fixed; top: calc(50% - 25px); left: calc(50% - 25px);
+      width: 50px; aspect-ratio: 1; box-sizing: content-box; animation: ll 1s infinite linear;
+      border-radius: 50%; border: 8px solid lightgray; border-right-color: black;
+    }
+    @keyframes ll {to{transform: rotate(1turn)}}
+    
+  </style>
+  <style>
+@font-face {
+  font-family: 'B Yekan';
+  src: url('https://cdn.fontcdn.ir/Font/Persian/BYekan/BYekan.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+</style>
+
+</head>
+
+  <body>
+    <noscript>Enable JavaScript to use <a href="https://www.traccar.org/">Traccar GPS Tracking System</a>.</noscript>
+    <div id="root" class="root"></div>
+    <div class="loader"></div>
+    <script type="module" src="/src/index.jsx" onerror="alert('Loading error.')"></script>
+  </body>
+</html>
