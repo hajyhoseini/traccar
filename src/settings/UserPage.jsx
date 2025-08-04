@@ -18,6 +18,12 @@ import {
   IconButton,
   OutlinedInput,
 } from '@mui/material';
+import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import dayjs from 'dayjs';
+import jalali from 'jalaliday';
+
+dayjs.extend(jalali);
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import CachedIcon from '@mui/icons-material/Cached';
@@ -60,8 +66,14 @@ const UserPage = () => {
   const userAttributes = useUserAttributes(t);
 
   const { id } = useParams();
-  const [item, setItem] = useState(id === currentUser.id.toString() ? currentUser : null);
 
+  const [item, setItem] = useState(null);
+
+  useEffect(() => {
+    if (id === currentUser?.id?.toString()) {
+      setItem(currentUser);
+    }
+  }, [id, currentUser]);
   const [deleteEmail, setDeleteEmail] = useState();
   const [deleteFailed, setDeleteFailed] = useState(false);
 
@@ -313,17 +325,30 @@ const UserPage = () => {
               </Typography>
             </AccordionSummary>
             <AccordionDetails className={classes.details}>
-              <TextField
-                label={t('userExpirationTime')}
-                type="date"
-                value={item.expirationTime ? item.expirationTime.split('T')[0] : '2099-01-01'}
-                onChange={(e) => {
-                  if (e.target.value) {
-                    setItem({ ...item, expirationTime: new Date(e.target.value).toISOString() });
-                  }
-                }}
-                disabled={!manager}
-              />
+        
+      <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="fa">
+        <DatePicker
+          label={t?.('userExpirationTime') || 'تاریخ انقضا'}
+          value={
+            item.expirationTime
+              ? dayjs(item.expirationTime).calendar('jalali')
+              : null
+          }
+          onChange={(newValue) => {
+            if (newValue?.isValid()) {
+              const gregorianDate = newValue.calendar('gregory');
+              setItem({
+                ...item,
+                expirationTime: gregorianDate.toISOString(),
+              });
+            }
+          }}
+          format="YYYY-MM-DD"
+          disabled={!manager}
+        />
+      </LocalizationProvider>
+    
+
               <TextField
                 type="number"
                 value={item.deviceLimit || 0}

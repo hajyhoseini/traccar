@@ -6,7 +6,7 @@ import {
 import LoginIcon from '@mui/icons-material/Login';
 import LinkIcon from '@mui/icons-material/Link';
 import { useCatch, useEffectAsync } from '../reactHelper';
-import { formatBoolean, formatTime } from '../common/util/formatter';
+import { formatBoolean, } from '../common/util/formatter';
 import { useTranslation } from '../common/components/LocalizationProvider';
 import PageLayout from '../common/components/PageLayout';
 import SettingsMenu from './components/SettingsMenu';
@@ -17,7 +17,11 @@ import { useManager } from '../common/util/permissions';
 import SearchHeader, { filterByKeyword } from './components/SearchHeader';
 import useSettingsStyles from './common/useSettingsStyles';
 import fetchOrThrow from '../common/util/fetchOrThrow';
+import dayjs from 'dayjs';
+import jalali from 'jalaliday';
 
+dayjs.extend(jalali);
+dayjs.calendar('jalali');
 const UsersPage = () => {
   const { classes } = useSettingsStyles();
   const navigate = useNavigate();
@@ -81,8 +85,11 @@ const UsersPage = () => {
               <TableCell>{item.email}</TableCell>
               <TableCell>{formatBoolean(item.administrator, t)}</TableCell>
               <TableCell>{formatBoolean(item.disabled, t)}</TableCell>
-              <TableCell>{formatTime(item.expirationTime, 'date')}</TableCell>
-              <TableCell className={classes.columnAction} padding="none">
+<TableCell>
+  {item.expirationTime
+    ? dayjs(item.expirationTime).calendar('jalali').format('YYYY-MM-DD')
+    : '-'}
+</TableCell>              <TableCell className={classes.columnAction} padding="none">
                 <CollectionActions
                   itemId={item.id}
                   editPath="/settings/user"
