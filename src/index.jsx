@@ -12,6 +12,7 @@ import ServerProvider from './ServerProvider';
 import ErrorBoundary from './ErrorBoundary';
 import AppThemeProvider from './AppThemeProvider';
 import './index.css'; // فایل CSS که direction: rtl و font-family توشه
+import PersianDateProvider from './common/components/PersianDateProvider.jsx';
 
 preloadImages();
 
@@ -20,19 +21,22 @@ root.render(
   <ErrorBoundary>
     <Provider store={store}>
       <LocalizationProvider>
-        <StyledEngineProvider injectFirst>
-          <AppThemeProvider>
-            <CssBaseline />
-            <ServerProvider>
-              <BrowserRouter>
-                <Navigation />
-              </BrowserRouter>
-              <ErrorHandler />
-              <NativeInterface />
-            </ServerProvider>
-          </AppThemeProvider>
-        </StyledEngineProvider>
+        <PersianDateProvider>  {/* اینجا اضافه کن */}
+          <StyledEngineProvider injectFirst>
+            <AppThemeProvider>
+              <CssBaseline />
+              <ServerProvider>
+                <BrowserRouter>
+                  <Navigation />
+                </BrowserRouter>
+                <ErrorHandler />
+                <NativeInterface />
+              </ServerProvider>
+            </AppThemeProvider>
+          </StyledEngineProvider>
+        </PersianDateProvider>
       </LocalizationProvider>
     </Provider>
   </ErrorBoundary>,
 );
+;

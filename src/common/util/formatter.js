@@ -1,4 +1,6 @@
 import dayjs from 'dayjs';
+import jalaliday from 'jalaliday';
+
 import duration from 'dayjs/plugin/duration';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
@@ -18,6 +20,9 @@ import { prefixString } from './stringUtils';
 dayjs.extend(duration);
 dayjs.extend(relativeTime);
 dayjs.extend(localizedFormat);
+dayjs.extend(jalaliday);
+
+dayjs.locale('fa');  // تنظیم زبان فارسی
 
 export const formatBoolean = (value, t) => (value ? t('sharedYes') : t('sharedNo'));
 
@@ -32,23 +37,21 @@ export const formatVoltage = (value, t) => `${value.toFixed(2)} ${t('sharedVoltA
 export const formatConsumption = (value, t) => `${value.toFixed(2)} ${t('sharedLiterPerHourAbbreviation')}`;
 
 export const formatTime = (value, format) => {
-  if (value) {
-    const d = dayjs(value).toDate();
-    const dateConfig = { year: 'numeric', month: '2-digit', day: '2-digit' };
-    const minuteConfig = { hour: '2-digit', minute: '2-digit' };
-    const secondConfig = { ...minuteConfig, second: '2-digit' };
-    switch (format) {
-      case 'date':
-        return d.toLocaleDateString(undefined, dateConfig);
-      case 'time':
-        return d.toLocaleTimeString(undefined, secondConfig);
-      case 'minutes':
-        return d.toLocaleString(undefined, { ...dateConfig, ...minuteConfig });
-      default:
-        return d.toLocaleString(undefined, { ...dateConfig, ...secondConfig });
-    }
+  if (!value) return '';
+
+  // استفاده از تقویم شمسی
+  const d = dayjs(value).calendar('jalali');
+
+  switch (format) {
+    case 'date':
+      return d.format('YYYY/MM/DD');          // فقط تاریخ
+    case 'time':
+      return d.format('HH:mm:ss');            // فقط زمان
+    case 'minutes':
+      return d.format('YYYY/MM/DD HH:mm');    // تاریخ و ساعت دقیقه‌ای
+    default:
+      return d.format('YYYY/MM/DD HH:mm:ss'); // تاریخ و ساعت دقیق
   }
-  return '';
 };
 
 export const formatStatus = (value, t) => t(prefixString('deviceStatus', value));

@@ -3,8 +3,10 @@ import {
 } from 'react';
 import { useSelector } from 'react-redux';
 import dayjs from 'dayjs';
+import jalaliday from 'jalaliday'; // اضافه کردن jalaliday
 import usePersistedState from '../util/usePersistedState';
 
+// ایمپورت زبان‌ها و فایل‌های JSON (مانند کد شما)
 import af from '../../resources/l10n/af.json'; import 'dayjs/locale/af';
 import ar from '../../resources/l10n/ar.json'; import 'dayjs/locale/ar';
 import az from '../../resources/l10n/az.json'; import 'dayjs/locale/az';
@@ -63,6 +65,8 @@ import vi from '../../resources/l10n/vi.json'; import 'dayjs/locale/vi';
 import zh from '../../resources/l10n/zh.json'; import 'dayjs/locale/zh';
 import zhTW from '../../resources/l10n/zh_TW.json'; import 'dayjs/locale/zh-tw';
 
+dayjs.extend(jalaliday); // فعال کردن پلاگین جلالی برای dayjs
+
 const languages = {
   af: { data: af, country: 'ZA', name: 'Afrikaans' },
   ar: { data: ar, country: 'AE', name: 'العربية' },
@@ -119,30 +123,9 @@ const languages = {
   uk: { data: uk, country: 'UA', name: 'Українська' },
   uz: { data: uz, country: 'UZ', name: 'Oʻzbekcha' },
   vi: { data: vi, country: 'VN', name: 'Tiếng Việt' },
-  zh: { data: zh, country: 'CN', name: '中文' },
-  zhTW: { data: zhTW, country: 'TW', name: '中文 (Taiwan)' },
+  zh: { data: zh, country: 'CN', name: '简体中文' },
+  zhTW: { data: zhTW, country: 'TW', name: '繁體中文' },
 };
-
-// const getDefaultLanguage = () => {
-//   const browserLanguages = window.navigator.languages ? window.navigator.languages.slice() : [];
-//   const browserLanguage = window.navigator.userLanguage || window.navigator.language;
-//   browserLanguages.push(browserLanguage);
-//   browserLanguages.push(browserLanguage.substring(0, 2));
-
-//   for (let i = 0; i < browserLanguages.length; i += 1) {
-//     let language = browserLanguages[i].replace('-', '');
-//     if (language in languages) {
-//       return language;
-//     }
-//     if (language.length > 2) {
-//       language = language.substring(0, 2);
-//       if (language in languages) {
-//         return language;
-//       }
-//     }
-//   }
-//   return 'en';
-// };
 
 const LocalizationContext = createContext({
   languages,
@@ -157,11 +140,13 @@ export const LocalizationProvider = ({ children }) => {
     return userLanguage || serverLanguage;
   });
 
-const [localLanguage, setLocalLanguage] = usePersistedState('language', 'fa');
+  const [localLanguage, setLocalLanguage] = usePersistedState('language', 'fa');
 
+  // انتخاب زبان؛ اولویت با زبان از سرور یا کاربر، سپس لوکال استوریج
   const language = remoteLanguage || localLanguage;
 
-  const direction = /^(ar|he|fa)$/.test(language) ? 'rtl' : 'ltr';
+  // تعیین جهت صفحه: برای زبان‌هایی مثل فارسی، عربی و عبری راست به چپ است
+  const direction = /^(ar|he|fa)/.test(language) ? 'rtl' : 'ltr';
 
   const value = useMemo(
     () => ({ languages, language, setLocalLanguage, direction }),
@@ -175,7 +160,16 @@ const [localLanguage, setLocalLanguage] = usePersistedState('language', 'fa');
     } else {
       selected = language;
     }
-    dayjs.locale(selected);
+
+    if (language.startsWith('fa')) {
+      dayjs.locale('fa');
+      dayjs.calendar('jalali'); // فعال کردن تقویم شمسی (جلالی)
+    } else {
+      dayjs.locale(selected);
+      dayjs.calendar('gregory'); // تقویم میلادی
+    }
+
+    // تنظیم جهت صفحه در مستند
     document.dir = direction;
   }, [language, direction]);
 
