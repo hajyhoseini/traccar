@@ -25,7 +25,14 @@ import useQuery from '../common/util/useQuery';
 import useSettingsStyles from './common/useSettingsStyles';
 import QrCodeDialog from '../common/components/QrCodeDialog';
 import fetchOrThrow from '../common/util/fetchOrThrow';
-
+import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import dayjs from 'dayjs';
+import jalaliday from 'jalaliday';
+dayjs.locale('fa');
+dayjs.extend(jalaliday);
+// فعال کردن تقویم جلالی در dayjs
+dayjs.extend(jalaliday);
 const DevicePage = () => {
   const { classes } = useSettingsStyles();
   const t = useTranslation();
@@ -134,17 +141,31 @@ const DevicePage = () => {
                 endpoint="/api/calendars"
                 label={t('sharedCalendar')}
               />
-              <TextField
-                label={t('userExpirationTime')}
-                type="date"
-                value={item.expirationTime ? item.expirationTime.split('T')[0] : '2099-01-01'}
-                onChange={(e) => {
-                  if (e.target.value) {
-                    setItem({ ...item, expirationTime: new Date(e.target.value).toISOString() });
-                  }
-                }}
-                disabled={!admin}
-              />
+ <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="fa">
+      <DatePicker
+        label={t?.('userExpirationTime') || 'تاریخ انقضا'}
+        value={
+          item.expirationTime
+            ? dayjs(item.expirationTime).calendar('jalali')
+            : dayjs().calendar('jalali') // مقدار پیش‌فرض امروز
+        }
+        onChange={(newValue) => {
+          if (newValue?.isValid()) {
+            const gregorianDate = newValue.calendar('gregory');
+            setItem({
+              ...item,
+              expirationTime: gregorianDate.toISOString(),
+            });
+          }
+        }}
+format="YYYY-MM-DD"
+        slotProps={{
+          textField: {
+            disabled: !admin,
+          },
+        }}
+      />
+    </LocalizationProvider>
               <FormControlLabel
                 control={<Checkbox checked={item.disabled} onChange={(event) => setItem({ ...item, disabled: event.target.checked })} />}
                 label={t('sharedDisabled')}

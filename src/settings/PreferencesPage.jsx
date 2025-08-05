@@ -21,7 +21,12 @@ import { sessionActions } from '../store';
 import { useAdministrator, useRestriction } from '../common/util/permissions';
 import useSettingsStyles from './common/useSettingsStyles';
 import fetchOrThrow from '../common/util/fetchOrThrow';
+import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import jalaliday from 'jalaliday';
 
+// فعال کردن تقویم جلالی
+dayjs.extend(jalaliday);
 const deviceFields = [
   { id: 'name', name: 'sharedName' },
   { id: 'uniqueId', name: 'deviceIdentifier' },
@@ -291,15 +296,26 @@ const PreferencesPage = () => {
             </Typography>
           </AccordionSummary>
           <AccordionDetails className={classes.details}>
-            <TextField
-              label={t('userExpirationTime')}
-              type="date"
-              value={tokenExpiration}
-              onChange={(e) => {
-                setTokenExpiration(e.target.value);
-                setToken(null);
-              }}
-            />
+           
+<LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="fa">
+  <DatePicker
+    label={t('tokenExpirationTime') || 'تاریخ انقضای توکن'}
+    value={
+      tokenExpiration
+        ? dayjs(tokenExpiration).calendar('jalali')
+        : dayjs().calendar('jalali')
+    }
+    onChange={(newValue) => {
+      if (newValue?.isValid()) {
+        const gregorianDate = newValue.calendar('gregory');
+        setTokenExpiration(gregorianDate.format('YYYY-MM-DD'));
+        setToken(null);
+      }
+    }}
+    format="YYYY-MM-DD"
+    renderInput={(params) => <TextField {...params} />}
+  />
+</LocalizationProvider>
             <FormControl>
               <OutlinedInput
                 multiline
