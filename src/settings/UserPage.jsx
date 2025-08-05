@@ -218,7 +218,7 @@ const UserPage = () => {
                 <InputLabel>{t('settingsSpeedUnit')}</InputLabel>
                 <Select
                   label={t('settingsSpeedUnit')}
-                  value={(item.attributes && item.attributes.speedUnit) || 'kn'}
+                  value={(item.attributes && item.attributes.speedUnit) || 'kmh'}
                   onChange={(e) => setItem({ ...item, attributes: { ...item.attributes, speedUnit: e.target.value } })}
                 >
                   <MenuItem value="kn">{t('sharedKn')}</MenuItem>
@@ -262,7 +262,7 @@ const UserPage = () => {
                 </Select>
               </FormControl>
               <SelectField
-                value={item.attributes && item.attributes.timezone}
+                value={item.attributes && item.attributes.timezone || 'Asia/Tehran'}
                 onChange={(e) => setItem({ ...item, attributes: { ...item.attributes, timezone: e.target.value } })}
                 endpoint="/api/server/timezones"
                 keyGetter={(it) => it}

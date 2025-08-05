@@ -1,13 +1,12 @@
 import { useEffect, useState } from 'react';
 import {
-  useMediaQuery, Select, MenuItem, FormControl, Button, TextField, Link, Snackbar, IconButton, Tooltip, Box,
+  Select, MenuItem, FormControl, Button, TextField, Link, Snackbar, IconButton, Tooltip, Box,
 } from '@mui/material';
 import ReactCountryFlag from 'react-country-flag';
 import { makeStyles } from 'tss-react/mui';
 import CloseIcon from '@mui/icons-material/Close';
 import VpnLockIcon from '@mui/icons-material/VpnLock';
 import QrCode2Icon from '@mui/icons-material/QrCode2';
-import { useTheme } from '@mui/material/styles';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { sessionActions } from '../store';
@@ -17,13 +16,12 @@ import usePersistedState from '../common/util/usePersistedState';
 import {
   generateLoginToken, handleLoginTokenListeners, nativeEnvironment, nativePostMessage,
 } from '../common/components/NativeInterface';
-// حذف import LogoImage چون استفاده نمیشه
 import { useCatch } from '../reactHelper';
 import QrCodeDialog from '../common/components/QrCodeDialog';
 import fetchOrThrow from '../common/util/fetchOrThrow';
 import EmailIcon from '@mui/icons-material/Email';
 import LockIcon from '@mui/icons-material/Lock';
-import PasswordIcon from '@mui/icons-material/Password'; // برای TOTP (کد امنیتی)
+import PasswordIcon from '@mui/icons-material/Password';
 import InputAdornment from '@mui/material/InputAdornment';
 
 const useStyles = makeStyles()((theme) => ({
@@ -53,27 +51,38 @@ const useStyles = makeStyles()((theme) => ({
   link: {
     cursor: 'pointer',
   },
+  title: {
+    textAlign: 'center',
+    color: theme.palette.primary.main,
+    fontFamily: 'Vazir',
+    fontWeight: 'bold',
+    fontSize: '1.5rem',
+    marginBottom: theme.spacing(4),  // <-- اینجا دو برابر شد
+  },
 }));
+
 
 const LoginPage = () => {
   const { classes } = useStyles();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const theme = useTheme();
   const t = useTranslation();
 
   const { languages, language, setLocalLanguage } = useLocalization();
-  const languageList = Object.entries(languages).map((values) => ({ code: values[0], country: values[1].country, name: values[1].name }));
+  const languageList = Object.entries(languages).map(([code, info]) => ({
+    code,
+    country: info.country,
+    name: info.name,
+  }));
 
   const [failed, setFailed] = useState(false);
-const isMobile = useMediaQuery(theme.breakpoints.down('lg'));
-const isLargeScreen = useMediaQuery(theme.breakpoints.up('lg'));
-
   const [email, setEmail] = usePersistedState('loginEmail', '');
   const [password, setPassword] = useState('');
   const [code, setCode] = useState('');
   const [showServerTooltip, setShowServerTooltip] = useState(false);
   const [showQr, setShowQr] = useState(false);
+  const [codeEnabled, setCodeEnabled] = useState(false);
+  const [announcementShown, setAnnouncementShown] = useState(false);
 
   const registrationEnabled = useSelector((state) => state.session.server.registration);
   const languageEnabled = useSelector((state) => {
@@ -83,10 +92,9 @@ const isLargeScreen = useMediaQuery(theme.breakpoints.up('lg'));
   const changeEnabled = useSelector((state) => !state.session.server.attributes.disableChange);
   const emailEnabled = useSelector((state) => state.session.server.emailEnabled);
   const openIdEnabled = useSelector((state) => state.session.server.openIdEnabled);
-  const openIdForced = useSelector((state) => state.session.server.openIdEnabled && state.session.server.openIdForce);
-  const [codeEnabled, setCodeEnabled] = useState(false);
-
-  const [announcementShown, setAnnouncementShown] = useState(false);
+  const openIdForced = useSelector(
+    (state) => state.session.server.openIdEnabled && state.session.server.openIdForce
+  );
   const announcement = useSelector((state) => state.session.server.announcement);
 
   const handlePasswordLogin = async (event) => {
@@ -176,130 +184,10 @@ const isLargeScreen = useMediaQuery(theme.breakpoints.up('lg'));
           </FormControl>
         )}
       </div>
+
       <div className={classes.container}>
-        {/* نمایش SVG برای موبایل */}
-        {isMobile && (
-          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-            <svg
-              viewBox="0 0 800 150"
-              width="100%"
-              height="150"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <style>
-                {`
-                  @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@700&display=swap');
-                  .brand-text {
-                    font-family: 'Vazirmatn', sans-serif;
-                    font-size: 48px;
-                    fill: url(#gradient);
-                    filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));
-                    animation: fadeIn 5s ease forwards;
-                    opacity: 0;
-                  }
-                  @media (max-width: 600px) {
-                    .brand-text {
-                      font-size: 60px;
-                    }
-                  }
-                  @keyframes fadeIn {
-                    to { opacity: 1; }
-                  }
-                `}
-              </style>
-              <defs>
-                <linearGradient id="gradient" x1="0" y1="0" x2="1" y2="0">
-                  <stop offset="0%" stopColor="#1976d2" />
-                  <stop offset="100%" stopColor="#1976d2" />
-                </linearGradient>
-              </defs>
+        <div className={classes.title}>سامانه توسعه راهکارهای فناورانه</div>
 
-              <rect
-                x="20"
-                y="10"
-                width="760"
-                height="120"
-                rx="20"
-                ry="20"
-                fill="none"
-                stroke="#1976d2"
-                strokeWidth="4"
-                opacity="0.7"
-              />
-              <text
-                x="400"
-                y="80"
-                textAnchor="middle"
-                className="brand-text"
-                direction="rtl"
-              >
-                راه کار توسعه فناورانه هوشمند
-              </text>
-            </svg>
-          </Box>
-        )}
-
-        {/* نمایش SVG برای لپ‌تاپ */}
-        {isLargeScreen && (
-          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 6 }}>
-            <svg
-              viewBox="0 0 800 150"
-              width="80%"
-              height="180"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <style>
-                {`
-                  @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@700&display=swap');
-                  .brand-text {
-                    font-family: 'Vazirmatn', sans-serif;
-                    font-size: 54px;
-                    fill: url(#gradient);
-                    filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));
-                    animation: fadeIn 5s ease forwards;
-                    opacity: 0;
-                  }
-                  @keyframes fadeIn {
-                    to { opacity: 1; }
-                  }
-                `}
-              </style>
-              <defs>
-                <linearGradient id="gradient" x1="0" y1="0" x2="1" y2="0">
-                  <stop offset="0%" stopColor="#1976d2" />
-                  <stop offset="100%" stopColor="#1976d2" />
-                </linearGradient>
-              </defs>
-
-              <rect
-                x="20"
-                y="10"
-                width="760"
-                height="130"
-                rx="20"
-                ry="20"
-                fill="none"
-                stroke="#1976d2"
-                strokeWidth="4"
-                opacity="0.7"
-              />
-           <text
-  x="400"
-  y="90"
-  textAnchor="middle"
-  className="brand-text"
-  direction="rtl"
-  style={{ fontFamily: "'Vazirmatn', sans-serif" }}
->
-  توسعه راهکارهای فناورانه
-</text>
-
-            </svg>
-          </Box>
-        )}
-
-
-        
         {!openIdForced && (
           <>
             <TextField
@@ -394,41 +282,31 @@ const isLargeScreen = useMediaQuery(theme.breakpoints.up('lg'));
             </Button>
           </>
         )}
+
         {openIdEnabled && (
-          <Button
-            onClick={() => handleOpenIdLogin()}
-            variant="contained"
-            color="secondary"
-          >
+          <Button onClick={handleOpenIdLogin} variant="contained" color="secondary">
             {t('loginOpenId')}
           </Button>
         )}
+
         {!openIdForced && (
           <div className={classes.extraContainer}>
             {registrationEnabled && (
-              <Link
-                onClick={() => navigate('/register')}
-                className={classes.link}
-                underline="none"
-                variant="caption"
-              >
+              <Link onClick={() => navigate('/register')} className={classes.link} underline="none" variant="caption">
                 {t('loginRegister')}
               </Link>
             )}
             {emailEnabled && (
-              <Link
-                onClick={() => navigate('/reset-password')}
-                className={classes.link}
-                underline="none"
-                variant="caption"
-              >
+              <Link onClick={() => navigate('/reset-password')} className={classes.link} underline="none" variant="caption">
                 {t('loginReset')}
               </Link>
             )}
           </div>
         )}
       </div>
+
       <QrCodeDialog open={showQr} onClose={() => setShowQr(false)} />
+
       <Snackbar
         open={!!announcement && !announcementShown}
         message={announcement}

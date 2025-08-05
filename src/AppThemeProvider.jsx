@@ -6,7 +6,6 @@ import createCache from '@emotion/cache';
 import { prefixer } from 'stylis';
 import rtlPlugin from 'stylis-plugin-rtl';
 import theme from './common/theme';
-import { useLocalization } from './common/components/LocalizationProvider';
 
 const cache = createCache({
   key: 'muirtl',
