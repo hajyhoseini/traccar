@@ -1,35 +1,44 @@
-import { useTheme, useMediaQuery } from '@mui/material';
-import { useSelector } from 'react-redux';
+/** @jsxImportSource @emotion/react */
+import { keyframes } from '@emotion/react';
 import { makeStyles } from 'tss-react/mui';
-import Logo from '../resources/images/logo.svg?react';
+
+// انیمیشن جدید: نرم، زیبا، حرفه‌ای
+const fadeZoomIn = keyframes`
+  0% {
+    opacity: 0;
+    transform: scale(0.8) translateY(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+`;
 
 const useStyles = makeStyles()((theme) => ({
   image: {
     alignSelf: 'center',
-    maxWidth: '240px',
-    maxHeight: '120px',
+    maxWidth: '390px',
+    maxHeight: '390px',
     width: 'auto',
     height: 'auto',
     margin: theme.spacing(2),
+    marginRight: theme.spacing(26),
+
+    opacity: 0,
+    animation: `${fadeZoomIn} 1s ease-out forwards`, // انیمیشن اعمال شده
   },
 }));
 
-const LogoImage = ({ color }) => {
-  const theme = useTheme();
+const LogoImage = () => {
   const { classes } = useStyles();
 
-  const expanded = !useMediaQuery(theme.breakpoints.down('lg'));
-
-  const logo = useSelector((state) => state.session.server.attributes?.logo);
-  const logoInverted = useSelector((state) => state.session.server.attributes?.logoInverted);
-
-  if (logo) {
-    if (expanded && logoInverted) {
-      return <img className={classes.image} src={logoInverted} alt="" />;
-    }
-    return <img className={classes.image} src={logo} alt="" />;
-  }
-  return <Logo className={classes.image} style={{ color }} />;
+  return (
+    <img
+      className={classes.image}
+      src="/apple-touch-icon-180x180.png"
+      alt="logo"
+    />
+  );
 };
 
 export default LogoImage;
