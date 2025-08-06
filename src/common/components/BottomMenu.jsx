@@ -10,6 +10,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import MapIcon from '@mui/icons-material/Map';
 import PersonIcon from '@mui/icons-material/Person';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
+import MemoryIcon from '@mui/icons-material/Memory'; // آیکون نماد AI
 
 import { sessionActions } from '../../store';
 import { useTranslation } from './LocalizationProvider';
@@ -32,12 +33,18 @@ const BottomMenu = () => {
   const currentSelection = () => {
     if (location.pathname === `/settings/user/${user.id}`) {
       return 'account';
-    } if (location.pathname.startsWith('/settings')) {
+    } 
+    if (location.pathname.startsWith('/settings')) {
       return 'settings';
-    } if (location.pathname.startsWith('/reports')) {
+    } 
+    if (location.pathname.startsWith('/reports')) {
       return 'reports';
-    } if (location.pathname === '/') {
+    }
+    if (location.pathname === '/') {
       return 'map';
+    }
+    if (location.pathname === '/assistant') {
+      return 'assistant';
     }
     return null;
   };
@@ -81,6 +88,9 @@ const BottomMenu = () => {
       case 'map':
         navigate('/');
         break;
+      case 'assistant':  // گزینه جدید دستیار هوشمند
+        navigate('/assistant');
+        break;
       case 'reports':
         navigate('/reports/combined');
         break;
@@ -109,6 +119,12 @@ const BottomMenu = () => {
             </Badge>
           )}
           value="map"
+        />
+        {/* گزینه دستیار هوشمند جدید */}
+        <BottomNavigationAction 
+          label={t('assistantTitle') || 'دستیار هوشمند'} 
+          icon={<MemoryIcon color="primary" />} 
+          value="assistant" 
         />
         {!disableReports && (
           <BottomNavigationAction label={t('reportTitle')} icon={<DescriptionIcon />} value="reports" />
