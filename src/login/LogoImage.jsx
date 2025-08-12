@@ -17,8 +17,8 @@ const fadeZoomIn = keyframes`
 const useStyles = makeStyles()((theme) => ({
   image: {
     alignSelf: 'center',
-    maxWidth: '390px',
-    maxHeight: '390px',
+    maxWidth: '450 px',
+    maxHeight: '450 px',
     width: 'auto',
     height: 'auto',
     margin: theme.spacing(2),
