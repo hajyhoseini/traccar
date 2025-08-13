@@ -186,7 +186,8 @@ const LoginPage = () => {
       </div>
 
       <div className={classes.container}>
-        <div className={classes.title}>سامانه توسعه راهکارهای فناورانه</div>
+        <div className={classes.title}>سامانه جامع حمل و نقل اداری</div>
+        {/* <div className={classes.title}>سامانه توسعه راهکارهای فناورانه</div> */}
 
         {!openIdForced && (
           <>
