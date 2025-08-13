@@ -16,7 +16,7 @@ export default defineConfig(() => ({
     outDir: 'build',
     terserOptions: {
       compress: {
-        drop_console: false, // ✅ این باعث می‌شود console.log در production باقی بماند
+        drop_console: false,
       },
     },
   },

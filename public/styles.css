@@ -1,15 +1,15 @@
 @font-face {
   font-family: 'B Yekan';
-  src: url('/fonts/Vazir.woff2') format('woff2'); /* بدون /public */
+  src: url('/public/fonts/Vazir.woff2') format('woff2');
   font-weight: normal;
   font-style: normal;
-  font-display: swap;
+  font-display: swap; /* این خط کمک می‌کنه که فونت سریع‌تر و بدون فلاش لود بشه */
 }
 
 html, body {
   height: 100%;
-  margin: 0;
-  padding: 0;
+  margin: 0;    /* بهتره اینجا هم باشه */
+  padding: 0;   /* بهتره اینجا هم باشه */
 }
 
 body {
@@ -17,6 +17,7 @@ body {
   direction: rtl !important;
   text-align: left;
   font-weight: normal;
+  /* margin و padding رو اینجا نذار چون بالاتر گذاشتیم */
 }
 
 .root {
