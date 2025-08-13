@@ -7,14 +7,18 @@ import { viteStaticCopy } from 'vite-plugin-static-copy';
 export default defineConfig(() => ({
   server: {
     port: 3000,
-   proxy: {
-  '/api/socket': 'ws://5.39.35.230:8082',
-  '/api': 'http://5.39.35.230:8082',
-},
-
+    proxy: {
+      '/api/socket': 'ws://5.39.35.230:8082',
+      '/api': 'http://5.39.35.230:8082',
+    },
   },
   build: {
     outDir: 'build',
+    terserOptions: {
+      compress: {
+        drop_console: false, // ✅ این باعث می‌شود console.log در production باقی بماند
+      },
+    },
   },
   plugins: [
     svgr(),
