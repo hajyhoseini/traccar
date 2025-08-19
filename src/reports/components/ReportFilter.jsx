@@ -1,15 +1,20 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import {
-  FormControl, InputLabel, Select, MenuItem, Button, TextField, Typography,
+  FormControl, InputLabel, Select, MenuItem, Button, Typography,
 } from '@mui/material';
 import { useSelector } from 'react-redux';
 import dayjs from 'dayjs';
+import jalali from 'jalaliday';
+import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { useTranslation } from '../../common/components/LocalizationProvider';
 import useReportStyles from '../common/useReportStyles';
 import SplitButton from '../../common/components/SplitButton';
 import SelectField from '../../common/components/SelectField';
 import { useRestriction } from '../../common/util/permissions';
+
+dayjs.extend(jalali);
 
 const ReportFilter = ({
   children, onShow, onExport, onSchedule, deviceType, loading,
@@ -29,8 +34,9 @@ const ReportFilter = ({
   const from = searchParams.get('from');
   const to = searchParams.get('to');
   const [period, setPeriod] = useState('today');
-  const [customFrom, setCustomFrom] = useState(dayjs().subtract(1, 'hour').locale('en').format('YYYY-MM-DDTHH:mm'));
-  const [customTo, setCustomTo] = useState(dayjs().locale('en').format('YYYY-MM-DDTHH:mm'));
+
+  const [customFrom, setCustomFrom] = useState(dayjs().subtract(1, 'hour'));
+  const [customTo, setCustomTo] = useState(dayjs());
   const [selectedOption, setSelectedOption] = useState('json');
 
   const [description, setDescription] = useState();
@@ -44,7 +50,7 @@ const ReportFilter = ({
       return true;
     }
     return loading;
-  }
+  };
   const disabled = evaluateDisabled();
   const loaded = from && to && !loading;
 
@@ -60,7 +66,7 @@ const ReportFilter = ({
       result.schedule = t('reportSchedule');
     }
     return result;
-  }
+  };
   const options = evaluateOptions();
 
   useEffect(() => {
@@ -98,8 +104,8 @@ const ReportFilter = ({
         selectedTo = dayjs().subtract(1, 'month').endOf('month');
         break;
       default:
-        selectedFrom = dayjs(customFrom, 'YYYY-MM-DDTHH:mm');
-        selectedTo = dayjs(customTo, 'YYYY-MM-DDTHH:mm');
+        selectedFrom = customFrom;
+        selectedTo = customTo;
         break;
     }
 
@@ -116,7 +122,7 @@ const ReportFilter = ({
     newParams.delete('to');
     values.forEach((id) => newParams.append(key, id));
     setSearchParams(newParams, { replace: true });
-  }
+  };
 
   const onSelected = (type) => {
     switch (type) {
@@ -130,7 +136,7 @@ const ReportFilter = ({
         setSelectedOption(type);
         break;
     }
-  }
+  };
 
   const onClick = (type) => {
     switch (type) {
@@ -192,24 +198,36 @@ const ReportFilter = ({
           </div>
           {period === 'custom' && (
             <div className={classes.filterItem}>
-              <TextField
-                label={t('reportFrom')}
-                type="datetime-local"
-                value={customFrom}
-                onChange={(e) => setCustomFrom(e.target.value)}
-                fullWidth
-              />
+              <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="fa">
+                <DatePicker
+                  label={t('reportFrom')}
+                  value={customFrom ? dayjs(customFrom).calendar('jalali') : null}
+                  onChange={(newValue) => {
+                    if (newValue?.isValid()) {
+                      const gregorianDate = newValue.calendar('gregory');
+                      setCustomFrom(gregorianDate);
+                    }
+                  }}
+                  format="YYYY-MM-DD"
+                />
+              </LocalizationProvider>
             </div>
           )}
           {period === 'custom' && (
             <div className={classes.filterItem}>
-              <TextField
-                label={t('reportTo')}
-                type="datetime-local"
-                value={customTo}
-                onChange={(e) => setCustomTo(e.target.value)}
-                fullWidth
-              />
+              <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="fa">
+                <DatePicker
+                  label={t('reportTo')}
+                  value={customTo ? dayjs(customTo).calendar('jalali') : null}
+                  onChange={(newValue) => {
+                    if (newValue?.isValid()) {
+                      const gregorianDate = newValue.calendar('gregory');
+                      setCustomTo(gregorianDate);
+                    }
+                  }}
+                  format="YYYY-MM-DD"
+                />
+              </LocalizationProvider>
             </div>
           )}
         </>
@@ -264,3 +282,4 @@ const ReportFilter = ({
 };
 
 export default ReportFilter;
+
