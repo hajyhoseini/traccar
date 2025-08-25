@@ -326,27 +326,28 @@ const UserPage = () => {
             </AccordionSummary>
             <AccordionDetails className={classes.details}>
         
-      <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="fa">
-        <DatePicker
-          label={t?.('userExpirationTime') || 'تاریخ انقضا'}
-          value={
-            item.expirationTime
-              ? dayjs(item.expirationTime).calendar('jalali')
-              : null
-          }
-          onChange={(newValue) => {
-            if (newValue?.isValid()) {
-              const gregorianDate = newValue.calendar('gregory');
-              setItem({
-                ...item,
-                expirationTime: gregorianDate.toISOString(),
-              });
-            }
-          }}
-          format="YYYY-MM-DD"
-          disabled={!manager}
-        />
-      </LocalizationProvider>
+    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="fa">
+  <DatePicker
+    label={t?.('userExpirationTime') || 'تاریخ انقضا'}
+    value={
+      item.expirationTime
+        ? dayjs(item.expirationTime).subtract(1, 'day').calendar('jalali') // یک روز عقب
+        : null
+    }
+    onChange={(newValue) => {
+      if (newValue?.isValid()) {
+        const gregorianDate = newValue.calendar('gregory').add(1, 'day'); // اضافه کردن روز هنگام ذخیره
+        setItem({
+          ...item,
+          expirationTime: gregorianDate.toISOString(),
+        });
+      }
+    }}
+    format="YYYY-MM-DD"
+    disabled={!manager}
+  />
+</LocalizationProvider>
+
     
 
               <TextField

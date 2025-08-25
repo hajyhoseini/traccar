@@ -18,7 +18,7 @@ export const speedUnitString = (unit, t) => {
       return t('sharedMph');
     case 'kn':
     default:
-      return t('sharedKn');
+      return t('sharedKmh');
   }
 };
 
